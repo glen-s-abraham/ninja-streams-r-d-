@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Real-Time Chat</title>
+        <link href="/styles.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+
+        <div id="video-chat-lobby">
+            <h2 class="text">Real-Time Chat</h2>
+            <input id="room-name" type="text" placeholder="Room name" />
+            <button id="join">Join</button>
+        </div>
+        <div id = "video-chat">
+            <video id = "user-video"></video>
+            <video id = "peer-video"></video>
+        </div>
+
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script  src="/chat.js"></script>
+    
+</html>
