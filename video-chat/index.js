@@ -12,18 +12,35 @@ const io = socketio(server,{
 
 io.on('connection',(socket)=>{
     socket.on('join',(roomName)=>{
-        console.log(roomName)
         let rooms = io.sockets.adapter.rooms;
         curRoom = rooms.get(roomName);
         if(curRoom===undefined){
             socket.join(roomName);
-            console.log('room created');
+            socket.emit('created');
+            console.log('created');
         }else if(curRoom.size ===1){
             socket.join(roomName)
-            console.log('joined room');
+            socket.emit('joined')
+            console.log('joined');
         }else{
-            console.warn('Room full');
+            socket.emit('full')
+            console.log('full')
         }
         
+    })
+    socket.on('ready',(roomName)=>{
+        socket.broadcast.to(roomName).emit('ready');
+        console.log('ready')
+    })
+    socket.on('candidate',(candidate,roomName)=>{
+        socket.broadcast.to(roomName).emit('candidate',candidate);
+        console.log(candidate)
+    })
+    socket.on('offer',(offer,roomName)=>{
+        socket.broadcast.to(roomName).emit('offer',offer);
+        console.log(offer)
+    })
+    socket.on('answer',(answer,roomName)=>{
+        socket.broadcast.to(roomName).emit('answer',answer);
     })
 })
