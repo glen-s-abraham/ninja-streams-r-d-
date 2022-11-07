@@ -2,7 +2,7 @@ sdk = new SrsRtcPublisherAsync();
 
 // For example: webrtc://r.ossrs.net/live/livestream
 //var url = "webrtc://localhost:8000/live/livestream";
-var url = "webrtc://localhost/live/chakka";
+var url = "webrtc://192.168.1.8/live/chakka";
 
 sdk.publish(url).then(function(session){
     console.log(session);
