@@ -90,7 +90,6 @@ const _onTrackImpl = (evt) => {
 
 
 socket.on('ready', () => {
-   console.log('ready');
    if (isCreator) {
       rtcPeerConn = new RTCPeerConnection(iceServers);
       rtcPeerConn.onicecandidate = _onIceCandidateImpl;
