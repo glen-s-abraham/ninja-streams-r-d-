@@ -6,10 +6,22 @@ let joinBtn = document.querySelector('#join');
 let chatRoomn = document.querySelector('#video-chat');
 let userVideo = document.querySelector('#user-video');
 let peerVideo = document.querySelector('#peer-video');
+let btnGroup = document.querySelector('#btn-group');
+let btnMute = document.querySelector('#btnMute');
+let btnLeave = document.querySelector('#btnLeave');
+let btnHide = document.querySelector('#btnHide');
+
+
 let rtcPeerConn;
 let userStream;
 
 let isCreator = false;
+let isMuted = false;
+let isCameraHidden = false;
+
+
+
+
 const iceServers = {
    iceServers: [
       { urls: "stun:stunserver.example.org" },
@@ -24,18 +36,67 @@ joinBtn.addEventListener('click', (evt) => {
    }
 });
 
-socket.on("created", ()=> {
+
+btnMute.addEventListener('click', (evt) => {
+   isMuted = !isMuted;
+   if (isMuted) {
+      userStream.getAudioTracks()[0].enabled = false;
+      btnMute.textContent = "Unmute";
+   } else {
+      userStream.getAudioTracks()[0].enabled = true;
+      btnMute.textContent = "mute"
+   }
+})
+
+btnHide.addEventListener('click', (evt) => {
+   isCameraHidden = !isCameraHidden;
+   if (isCameraHidden) {
+      userStream.getVideoTracks()[0].enabled = false;
+      btnHide.textContent = "Unhide Camera";
+   } else {
+      userStream.getVideoTracks()[0].enabled = true;
+      btnHide.textContent = "Hide Camera"
+   }
+
+})
+
+btnLeave.addEventListener('click', (evt) => {
+   socket.emit("leave", roomName.value);
+   chatLobby.style = "display:block";
+   btnGroup.style = "display:none";
+   userVideo.srcObject.getTracks().forEach(track=>track.stop());
+   peerVideo.srcObject.getTracks().forEach(track=>track.stop());
+   if(rtcPeerConn){
+      rtcPeerConn.ontrack = null;
+      rtcPeerConn.onicecandidate = null;
+      rtcPeerConn.close();
+      rtcPeerConn=null;
+   }
+})
+socket.on('leave', () => {
+   isCreator = true;
+   peerVideo.srcObject.getTracks().forEach(track=>track.stop());
+   if(rtcPeerConn){
+      rtcPeerConn.ontrack = null;
+      rtcPeerConn.onicecandidate = null;
+      rtcPeerConn.close();
+      rtcPeerConn=null;
+   }
+})
+
+socket.on("created", () => {
    isCreator = true;
 
    navigator.mediaDevices
       .getUserMedia({
          audio: false,
-         video: { width: 1280, height: 720 },
+         video: { width: 500, height: 500 },
       })
       .then(function (stream) {
          /* use the stream */
          userStream = stream;
          chatLobby.style = "display:none";
+         btnGroup.style = "display:flex"
          userVideo.srcObject = stream;
          userVideo.onloadedmetadata = function (e) {
             userVideo.play();
@@ -48,16 +109,17 @@ socket.on("created", ()=> {
       });
 });
 
-socket.on("joined",()=>{
+socket.on("joined", () => {
    navigator.mediaDevices
       .getUserMedia({
-         audio: false,
-         video: { width: 1280, height: 720 },
+         audio: true,
+         video: { width: 500, height: 500 },
       })
       .then(function (stream) {
          /* use the stream */
          userStream = stream;
          chatLobby.style = "display:none";
+         btnGroup.style = "display:flex"
          userVideo.srcObject = stream;
          userVideo.onloadedmetadata = function (e) {
             userVideo.play();
@@ -122,3 +184,4 @@ socket.on('offer', (offer) => {
 socket.on('answer', (answer) => {
    rtcPeerConn.setRemoteDescription(answer);
 })
+
