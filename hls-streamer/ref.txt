@@ -1,0 +1,2 @@
+https://www.npmjs.com/package/hls-server
+https://medium.com/@HoseungJang/video-streaming-with-node-js-9401213a04e7
